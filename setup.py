@@ -1,3 +1,5 @@
+import imp
+import os.path
 from setuptools import find_packages
 from setuptools import setup
 import shlex
@@ -10,7 +12,10 @@ PY2 = sys.version_info[0] == 2
 assert PY3 or PY2
 
 
-version = '2.11.0'
+here = os.path.abspath(os.path.dirname(__file__))
+version = imp.load_source(
+    '_version', os.path.join(here, 'labelme', '_version.py')).__version__
+del here
 
 
 install_requires = [
@@ -51,7 +56,7 @@ if QT_BINDING is None:
             sys.exit(1)
         assert PY3
         # PyQt5 can be installed via pip for Python3
-        install_requires.append('pyqt5')
+        install_requires.append('PyQt5')
         QT_BINDING = 'pyqt5'
 del QT_BINDING
 
@@ -60,10 +65,11 @@ if sys.argv[1] == 'release':
     commands = [
         'git tag v{:s}'.format(version),
         'git push origin master --tag',
-        'python setup.py sdist',
-        'twine upload dist/labelme-{:s}.tar.gz'.format(version),
+        'python setup.py sdist upload',
     ]
-    sys.exit(sum(subprocess.call(shlex.split(cmd)) for cmd in commands))
+    for cmd in commands:
+        subprocess.check_call(shlex.split(cmd))
+    sys.exit(0)
 
 
 setup(
@@ -82,15 +88,19 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: POSIX',
-        'Topic :: Internet :: WWW/HTTP',
+        'Natural Language :: English',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
     ],
-    package_data={'labelme': ['icons/*']},
+    package_data={'labelme': ['icons/*', 'config/*.yaml']},
     entry_points={
         'console_scripts': [
             'labelme=labelme.app:main',
             'labelme_draw_json=labelme.cli.draw_json:main',
+            'labelme_draw_label_png=labelme.cli.draw_label_png:main',
             'labelme_json_to_dataset=labelme.cli.json_to_dataset:main',
             'labelme_on_docker=labelme.cli.on_docker:main',
         ],

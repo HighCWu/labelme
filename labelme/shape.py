@@ -1,6 +1,8 @@
 from qtpy import QtGui
 
-from .lib import distance
+from labelme.lib import distance
+from labelme.lib import distancetoline
+from labelme import logger
 
 
 # TODO(unknown):
@@ -54,7 +56,9 @@ class Shape(object):
             self.line_color = line_color
 
     def close(self):
-        assert len(self.points) > 2, 'Polygon should be created with points >2'
+        if len(self.points) <= 2:
+            logger.error('Polygon should be created with points >2')
+            return
         self._closed = True
 
     def addPoint(self, point):
@@ -67,6 +71,9 @@ class Shape(object):
         if self.points:
             return self.points.pop()
         return None
+
+    def insertPoint(self, i, point):
+        self.points.insert(i, point)
 
     def isClosed(self):
         return self._closed
@@ -133,6 +140,17 @@ class Shape(object):
                 min_distance = dist
                 min_i = i
         return min_i
+
+    def nearestEdge(self, point, epsilon):
+        min_distance = float('inf')
+        post_i = None
+        for i in range(len(self.points)):
+            line = [self.points[i - 1], self.points[i]]
+            dist = distancetoline(point, line)
+            if dist <= epsilon and dist < min_distance:
+                min_distance = dist
+                post_i = i
+        return post_i
 
     def containsPoint(self, point):
         return self.makePath().contains(point)

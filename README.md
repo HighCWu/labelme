@@ -3,16 +3,29 @@
 # labelme: Image Polygonal Annotation with Python
 
 [![PyPI Version](https://img.shields.io/pypi/v/labelme.svg)](https://pypi.python.org/pypi/labelme)
+[![Python Versions](https://img.shields.io/pypi/pyversions/labelme.svg)](https://pypi.org/project/labelme)
 [![Travis Build Status](https://travis-ci.org/wkentaro/labelme.svg?branch=master)](https://travis-ci.org/wkentaro/labelme)
 [![Docker Build Status](https://img.shields.io/docker/build/wkentaro/labelme.svg)](https://hub.docker.com/r/wkentaro/labelme)
 
 
 Labelme is a graphical image annotation tool inspired by <http://labelme.csail.mit.edu>.  
-It is written in Python and uses Qt for its graphical interface,  
-and supports annotations for semantic and instance segmentation.
+It is written in Python and uses Qt for its graphical interface.
 
 <img src="https://github.com/wkentaro/labelme/blob/master/examples/instance_segmentation/.readme/annotation.jpg?raw=true" width="80%" />  
 Fig 1. Example of annotations for instance segmentation.
+
+
+## Features
+
+- [x] Polygonal annotation
+- [x] Predefined labels ([#76](https://github.com/wkentaro/labelme/pull/76))
+- [x] Auto save mode ([#138](https://github.com/wkentaro/labelme/pull/138))
+- [x] Support custom json keys ([#140](https://github.com/wkentaro/labelme/pull/140))
+- [x] Undo by Ctrl-Z ([#112](https://github.com/wkentaro/labelme/pull/112), [#143](https://github.com/wkentaro/labelme/pull/143))
+- [x] Customize by config file ([#144](https://github.com/wkentaro/labelme/pull/144))
+- [x] VOC dataset export ([semantic segmentation](https://github.com/wkentaro/labelme/blob/master/examples/semantic_segmentation), [instance segmentation](https://github.com/wkentaro/labelme/blob/master/examples/instance_segmentation))
+- [x] Image level flag annotation ([#166](https://github.com/wkentaro/labelme/pull/166))
+- [x] Video annotation ([video annotation](https://github.com/wkentaro/labelme/blob/master/examples/video_annotation))
 
 
 ## Requirements
@@ -26,8 +39,8 @@ Fig 1. Example of annotations for instance segmentation.
 
 There are options:
 
-- Platform agonistic installation: Anaconda, Docker
-- Platform specific installation: Ubuntu, macOS
+- Platform agonistic installation: [Anaconda](#anaconda), [Docker](#docker)
+- Platform specific installation: [Ubuntu](#ubuntu), [macOS](#macos), [Windows](#windows)
 
 ### Anaconda
 
@@ -90,6 +103,16 @@ brew install wkentaro/labelme/labelme
 brew cask install wkentaro/labelme/labelme
 ```
 
+### Windows
+
+Firstly, follow instruction in [Anaconda](#anaconda).
+
+```bash
+# Pillow 5 causes dll load error on Windows.
+# https://github.com/wkentaro/labelme/pull/174
+conda install pillow=4.0.0
+```
+
 
 ## Usage
 
@@ -118,6 +141,7 @@ For more advanced usage, please refer to the examples:
 * [Tutorial (Single Image Example)](https://github.com/wkentaro/labelme/blob/master/examples/tutorial)
 * [Semantic Segmentation Example](https://github.com/wkentaro/labelme/blob/master/examples/semantic_segmentation)
 * [Instance Segmentation Example](https://github.com/wkentaro/labelme/blob/master/examples/instance_segmentation)
+* [Video Annotation Example](https://github.com/wkentaro/labelme/blob/master/examples/video_annotation)
 
 
 ## FAQ
@@ -142,24 +166,22 @@ pytest -v tests
 ```
 
 
-## How to build standalone app
+## How to build standalone executable
 
-Below is an example on macOS,
-and there are pre-built apps in
+Below shows how to build the standalone executable on macOS, Linux and Windows.  
+Also, there are pre-built executables in
 [the release section](https://github.com/wkentaro/labelme/releases).
 
 ```bash
-git clone https://github.com/wkentaro/labelme.git
-cd labelme
+# Setup conda
+conda create --name labelme python=3.6
+conda activate labelme
 
-virtualenv venv --python /usr/local/bin/python3
-. venv/bin/activate
-pip install -e .
-pip uninstall matplotlib
+# Build the standalone executable
+pip install .
 pip install pyinstaller
-
 pyinstaller labelme.spec
-open dist/labelme.app
+dist/labelme --version
 ```
 
 
